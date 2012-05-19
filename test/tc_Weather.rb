@@ -37,4 +37,10 @@ class WeatherTest < Test::Unit::TestCase
     }
   end
 
+  def test_get_min_temp
+    Weather.get_min_temp('82801')
+    # I'm not sure how else to test this right now
+    assert(true)
+  end
+
 end

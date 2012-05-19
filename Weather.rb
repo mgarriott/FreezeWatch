@@ -3,6 +3,7 @@
 require 'net/http'
 require 'cgi'
 require 'rexml/document'
+require 'date'
 
 class Weather
   @@url = 'http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php'
@@ -21,6 +22,21 @@ class Weather
     doc = REXML::Document.new(res.body)
     latlons = doc.elements['*/latLonList'].text.split
     latlons.map { |ll| LatLon.new(*ll.split(',')) }
+  end
+
+  def Weather.get_min_temp(ziplist)
+    today = Date.today
+    params = {
+      'zipCodeList' => Weather.parse_zipcodes(ziplist),
+      'product' => 'time-series',
+      'begin' => "#{today.to_s}T12:00",
+      'end' => "#{(today + 1).to_s}T12:00",
+      'Unit' => 'e',
+      'mint' => 'mint'
+    }
+    res = Weather.get_response(params)
+    doc = REXML::Document.new(res.body)
+    doc.elements['*/data/parameters/temperature/value'].text
   end
 
   def Weather.parse_zipcodes(zipcodes)
@@ -45,6 +61,3 @@ class LatLon
     @lat == other.lat && @lon == other.lon
   end
 end
-
-#w = Weather.new
-#puts w.get_latlons(['82801', '90210'])
