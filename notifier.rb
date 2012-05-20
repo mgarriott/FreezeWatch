@@ -4,26 +4,26 @@ require 'net/smtp'
 
 class Notifier
 
-  def initialize(login = nil, password = nil, domain = 'Hazmatt', auth_file = nil)
-    if (login.nil? || password.nil?) && auth_file.nil?
-      raise ArgumentException "You must either provide a login, " +
+  def initialize(params)
+    if (params[:login].nil? || params[:password].nil?) && params[:auth_file].nil?
+      raise ArgumentError, "You must either provide a login, " +
                     "and password or an authentication file."
     end
 
-    if not auth_file.nil?
-      @login, @password = auth_file.parse
+    if not params[:auth_file].nil?
+      @login, @password = params[:auth_file].parse
     else
-      @login = login
-      @password = password
+      @login = params[:login]
+      @password = params[:password]
     end
-    @domain = domain
+
   end
 
   def send(to, subject, body)
     msg = "Subject: #{subject}\n\n#{body}"
     smtp = Net::SMTP.new 'smtp.gmail.com', 587
     smtp.enable_starttls
-    smtp.start(@domain, @login, @password, :login) do
+    smtp.start('Hazmatt', @login, @password, :login) do
       smtp.send_message(msg, @login, to)
     end
   end
@@ -71,10 +71,3 @@ class AuthenticationFile
   end
   
 end
-
-#n = Notifier.new('matt.garriott@gmail.com', 'ProtestTheH3r0')
-#n.send({
-#  :subject => 'TestMessage',
-#  :body => 'This is a test message',
-#  :to => 'matt.garriott@gmail.com'
-#})

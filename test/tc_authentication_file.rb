@@ -2,7 +2,7 @@
 
 $:.unshift File.join(File.dirname(__FILE__), "..")
 
-require 'Notifier'
+require 'notifier'
 require 'test/unit'
 
 class NotifierTest < Test::Unit::TestCase
@@ -16,23 +16,33 @@ class NotifierTest < Test::Unit::TestCase
   end
 
   def test_create_auth_file
-    user = `whoami`.chomp
     file_name = 'test_auth_file'
-    make_file = lambda { 
-      AuthenticationFile.make_file(file_name, 'name', 'password')
-    }
 
-    if user == 'root'
-      make_file.call
+    superuser = handle_permissions do
+      AuthenticationFile.make_file(file_name, 'name', 'password')
+    end
+
+    if superuser
       assert(File.exist?(file_name))
       stat = File.stat(file_name)
       assert_equal(0, stat.gid)
       assert_equal(0, stat.uid)
       assert_equal('100600', stat.mode.to_s(8))
       assert_equal(1, File.delete(file_name))
-    else
-      assert_raise(SecurityError) { make_file.call }
     end
+  end
+
+  def handle_permissions
+    user = `whoami`.chomp
+    superuser = user == 'root'
+    if block_given?
+      if superuser
+        yield
+      else
+        assert_raise(SecurityError) { yield }
+      end
+    end
+    superuser
   end
 
   def test_create_bad_input
@@ -40,13 +50,18 @@ class NotifierTest < Test::Unit::TestCase
     bad_name = 'test name'
     bad_pass = 'bad pass'
 
-    assert_raise(RuntimeError) { 
-      AuthenticationFile.make_file(file_name, bad_name, 'okaypass')
+    bad_name_block = lambda {
     }
 
-    assert_raise(RuntimeError) { 
-      AuthenticationFile.make_file(file_name, 'okayname', bad_pass)
-    }
+    if handle_permissions
+      assert_raise(RuntimeError) { 
+        AuthenticationFile.make_file(file_name, bad_name, 'okaypass')
+      }
+
+      assert_raise(RuntimeError) { 
+        AuthenticationFile.make_file(file_name, 'okayname', bad_pass)
+      }
+    end
 
     assert_equal(false, File.exists?(file_name))
   end
@@ -56,14 +71,16 @@ class NotifierTest < Test::Unit::TestCase
     name = 'testname'
     password = 'testpassword'
 
-    AuthenticationFile.make_file(file_name, name, password)
+    handle_permissions do
+      AuthenticationFile.make_file(file_name, name, password)
 
-    af = AuthenticationFile.new(file_name)
+      af = AuthenticationFile.new(file_name)
 
-    actual_name, actual_pass = af.parse
+      actual_name, actual_pass = af.parse
 
-    assert_equal(name, actual_name)
-    assert_equal(password, actual_pass)
+      assert_equal(name, actual_name)
+      assert_equal(password, actual_pass)
+    end
   end
 
 end

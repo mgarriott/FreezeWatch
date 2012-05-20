@@ -3,7 +3,7 @@
 $:.unshift File.join(File.dirname(__FILE__), "..")
 
 require 'test/unit'
-require 'Weather'
+require 'weather'
 
 class WeatherTest < Test::Unit::TestCase
   
@@ -38,9 +38,9 @@ class WeatherTest < Test::Unit::TestCase
   end
 
   def test_get_min_temp
-    Weather.get_min_temp('82801')
-    # I'm not sure how else to test this right now
-    assert(true)
+    min_temp = Weather.get_min_temp('82801').to_i
+    assert(min_temp < 85)
+    assert(min_temp > -30)
   end
 
 end
