@@ -45,9 +45,9 @@ class AuthenticationFile
   end
 
   def AuthenticationFile.make_file(path, name, password)
-    user = `whoami`.chomp
+    user = Process::Sys.getuid
 
-    if user != 'root'
+    if user != 0
       raise SecurityError, 'Only root can make an authentication file.'
     end
 
@@ -58,10 +58,10 @@ class AuthenticationFile
 
     parsed_path = parse_path(path)
     
-    File.open(path, 'w') { |f| f.write("#{name} #{password}") }
+    File.open(parsed_path, 'w') { |f| f.write("#{name} #{password}") }
     
-    File.chmod(0600, path)
-    File.chown(0, 0, path)
+    File.chmod(0600, parsed_path)
+    File.chown(0, 0, parsed_path)
   end
 
   def parse

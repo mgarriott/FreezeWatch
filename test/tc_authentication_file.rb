@@ -22,19 +22,21 @@ class NotifierTest < Test::Unit::TestCase
       AuthenticationFile.make_file(file_name, 'name', 'password')
     end
 
+    actual_path = AuthenticationFile.parse_path(file_name)
+
     if superuser
-      assert(File.exist?(file_name))
-      stat = File.stat(file_name)
+      assert(File.exist?(actual_path))
+      stat = File.stat(actual_path)
       assert_equal(0, stat.gid)
       assert_equal(0, stat.uid)
       assert_equal('100600', stat.mode.to_s(8))
-      assert_equal(1, File.delete(file_name))
+      assert_equal(1, File.delete(actual_path))
     end
   end
 
   def handle_permissions
-    user = `whoami`.chomp
-    superuser = user == 'root'
+    user = Process::Sys.getuid
+    superuser = user == 0
     if block_given?
       if superuser
         yield
