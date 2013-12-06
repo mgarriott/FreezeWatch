@@ -1,4 +1,44 @@
+SERVICE_DIR = File.join('/', 'usr', 'lib', 'systemd', 'system')
+SERVICE_FILE = 'freezewatch.service'
+
 task default: :test
+
+desc "Install the systemd service"
+task :install do
+  if Dir.exist?(SERVICE_DIR)
+    ruby = `which ruby`.chomp
+    service = <<-SERVICE
+[Unit]
+Description=FreezeWatch temperature monitor
+After=network.target
+
+[Service]
+ExecStart=#{ruby} #{File.join(__dir__, 'src', 'watcher.rb')}
+
+[Install]
+WantedBy=multi-user.target
+    SERVICE
+
+    File.write(File.join(SERVICE_DIR, SERVICE_FILE), service)
+
+    puts "The service file '#{SERVICE_FILE}' was successfully installed to " +
+         "'#{SERVICE_DIR}'"
+    puts "You can run `systemctl start #{SERVICE_FILE}` to start the daemon"
+    puts "Running `systemctl enable #{SERVICE_FILE}` will ensure the " +
+         "daemon starts automatically after rebooting."
+  else
+    puts "The directory '#{SERVICE_DIR}' does not exist. Are you using systemd?"
+  end
+end
+
+desc "Uninstall the systemd service"
+task :uninstall do
+  file = File.join(SERVICE_DIR, SERVICE_FILE)
+  File.delete(file) if File.exist?(file)
+
+  puts "Successfully deleted '#{file}'"
+  puts "Don't forget to run `systemctl disable #{SERVICE_FILE}"
+end
 
 desc "Run the test suite"
 task :test do
