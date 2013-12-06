@@ -40,7 +40,7 @@ class AuthenticationFile
     if path.start_with?('/')
       path
     else
-      File.expand_path(File.join(File.dirname(__FILE__), path))
+      File.expand_path(File.join(__dir__, '..', path))
     end
   end
 

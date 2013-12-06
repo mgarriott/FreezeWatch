@@ -1,17 +1,15 @@
-#!/usr/bin/ruby
-
-$:.unshift File.join(File.dirname(__FILE__), "..")
+$:.unshift File.join(__dir__, '..', 'src')
 
 require 'notifier'
 require 'test/unit'
 
 class NotifierTest < Test::Unit::TestCase
-  
+
   def test_get_file_path
     abs_path = '/home/matt/test'
     assert_equal(abs_path, AuthenticationFile.parse_path(abs_path))
 
-    assert_equal('/home/matt/programming/ruby/FreezeWatch/test', 
+    assert_equal(File.expand_path(File.join(__dir__, '..', 'test')),
       AuthenticationFile.parse_path('test'))
   end
 
@@ -52,15 +50,12 @@ class NotifierTest < Test::Unit::TestCase
     bad_name = 'test name'
     bad_pass = 'bad pass'
 
-    bad_name_block = lambda {
-    }
-
     if handle_permissions
-      assert_raise(RuntimeError) { 
+      assert_raise(RuntimeError) {
         AuthenticationFile.make_file(file_name, bad_name, 'okaypass')
       }
 
-      assert_raise(RuntimeError) { 
+      assert_raise(RuntimeError) {
         AuthenticationFile.make_file(file_name, 'okayname', bad_pass)
       }
     end
