@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-
 require 'net/smtp'
 
 class Notifier
@@ -17,13 +15,15 @@ class Notifier
       @password = params[:password]
     end
 
+    @server_address = params[:server_address]
+    @port = params[:port]
   end
 
   def send(to, subject, body)
     msg = "Subject: #{subject}\n\n#{body}"
-    smtp = Net::SMTP.new 'smtp.gmail.com', 587
+    smtp = Net::SMTP.new(@server_address, @port)
     smtp.enable_starttls
-    smtp.start('Hazmatt', @login, @password, :login) do
+    smtp.start('FreezeWatch', @login, @password, :login) do
       smtp.send_message(msg, @login, to)
     end
   end
