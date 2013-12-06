@@ -1,10 +1,8 @@
 SERVICE_DIR = File.join('/', 'usr', 'lib', 'systemd', 'system')
 SERVICE_FILE = 'freezewatch.service'
 
-task default: :test
-
-desc "Install the systemd service"
-task :install do
+# Create a systemd service file in the appropriate directory
+def create_systemd_service
   if Dir.exist?(SERVICE_DIR)
     ruby = `which ruby`.chomp
     service = <<-SERVICE
@@ -21,6 +19,7 @@ WantedBy=multi-user.target
 
     File.write(File.join(SERVICE_DIR, SERVICE_FILE), service)
 
+    puts
     puts "The service file '#{SERVICE_FILE}' was successfully installed to " +
          "'#{SERVICE_DIR}'"
     puts "You can run `systemctl start #{SERVICE_FILE}` to start the daemon"
@@ -29,6 +28,88 @@ WantedBy=multi-user.target
   else
     puts "The directory '#{SERVICE_DIR}' does not exist. Are you using systemd?"
   end
+end
+
+def gets_or_default(default)
+  input = gets.chomp
+  input.empty? ? default : input
+end
+
+task default: :test
+
+desc "Create the YAML file and install the systemd service file"
+task :install do
+  # Create an authentication file
+  require File.join(__dir__, 'src', 'notifier')
+  require 'yaml'
+
+  ARGV.clear # Clear the arg list so we can use gets
+
+  # We need the user to be root to install the service file and to create a
+  # root owned authentication file
+  if Process::Sys.getuid != 0
+    puts "Permissions Error! This task must be run as root."
+    exit 1
+  end
+
+  config = {}
+
+  puts
+  puts "Welcome to the FreezeWatch setup"
+  puts "--------------------------------"
+  puts
+  puts "The setup process will walk you through the steps needed to get " +
+       "FreezeWatch working."
+  puts "You can edit these settings any time by modifying the " +
+       "freezewatch.yaml file directly."
+  puts
+  puts "Enter the email addresses where notifications will be sent"
+  print "(multiple addresses can be separated with a comma): "
+
+  config[:to] = gets.chomp.split(',')
+
+  puts
+  puts "### SMTP Configuration ###"
+  puts "FreezeWatch requires an SMTP account to send emails i.e. a Gmail " +
+       "account."
+  puts "Account information will be stored in a hidden file and will be " +
+       "readable only by the root user."
+
+  print "Enter the SMTP account username (#{config[:to].first}): "
+  login = gets_or_default(config[:to].first)
+
+  print "Enter the SMTP account password: "
+  system("stty -echo")
+  password = gets.chomp
+  system("stty echo")
+
+  AuthenticationFile.make_file(".auth_file", login, password)
+
+  puts
+  print "Enter the SMTP server address e.g. (smtp.gmail.com): "
+  config[:server_address] = gets_or_default('smtp.gmail.com')
+
+  print "Enter the SMTP server port (587): "
+  config[:port] = gets_or_default(587)
+
+  puts
+  puts "### FreezeWatch Configuration ###"
+  print "Enter the minimum safe temperature in degrees F (38): "
+  config[:min_safe_temp] = gets_or_default(38)
+
+  print "How often (in seconds) should FreezeWatch check the temperature report " +
+        "(3600): "
+  config[:sleep_time] = gets_or_default(3600)
+
+  print "What is the zipcode of the location to check: "
+  config[:zip_code] = gets.chomp
+
+  # Create YAML configuration file
+  yaml_file = 'freezewatch.yaml'
+  File.write(yaml_file, config.to_yaml)
+  puts "Configuration successfully saved to #{yaml_file}"
+
+  create_systemd_service
 end
 
 desc "Uninstall the systemd service"
