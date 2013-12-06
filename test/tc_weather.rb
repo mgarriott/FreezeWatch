@@ -6,7 +6,7 @@ require 'test/unit'
 require 'weather'
 
 class WeatherTest < Test::Unit::TestCase
-  
+
   def test_get_query_string
     query_params = {
       'listZipCodeList=82801' => { 'listZipCodeList' => '82801' },

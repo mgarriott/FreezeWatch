@@ -1,6 +1,4 @@
-#!/usr/bin/ruby
-
-$:.unshift File.join(File.dirname(__FILE__), ".")
+$:.unshift File.join(__dir__, ".")
 
 require 'date'
 require 'weather'

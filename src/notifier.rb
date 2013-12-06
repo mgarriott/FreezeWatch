@@ -57,9 +57,9 @@ class AuthenticationFile
     end
 
     parsed_path = parse_path(path)
-    
+
     File.open(parsed_path, 'w') { |f| f.write("#{name} #{password}") }
-    
+
     File.chmod(0600, parsed_path)
     File.chown(0, 0, parsed_path)
   end
@@ -69,5 +69,5 @@ class AuthenticationFile
 
     s.rstrip.split
   end
-  
+
 end

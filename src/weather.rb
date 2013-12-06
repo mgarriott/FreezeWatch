@@ -45,7 +45,7 @@ class Weather
 end
 
 class LatLon
-  
+
   attr_reader :lat, :lon
 
   def initialize(lat, lon)
