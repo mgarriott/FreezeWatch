@@ -1,0 +1,6 @@
+task default: :test
+
+desc "Run the test suite"
+task :test do
+  require File.join(__dir__, 'test', 'ts_all')
+end
