@@ -4,11 +4,9 @@ require 'date'
 require 'weather'
 require 'notifier'
 require 'syslog'
+require 'yaml'
 
-MIN_SAFE_TEMP = 38
-SLEEP_TIME = 3600
-
-TO = ['matt.garriott@gmail.com', 'ashley.erin.roberts@gmail.com']
+config = YAML.load_file(File.join(__dir__, '..', 'freezewatch.yaml'))
 
 def log(msg)
   unless Syslog.opened?
@@ -19,12 +17,14 @@ def log(msg)
   Syslog.close()
 end
 
-log("Started successfully")
+log("Started successfully, Min Temp = #{config[:min_safe_temp]}, " +
+    "Sleep Time = #{config[:sleep_time]}, ZipCode = #{config[:zip_code]}, " +
+    "To = #{config[:to].join(' ')}")
 
 below_freezing = false
 last_date = Date.today()
 while(true)
-  min_temp = Weather.get_min_temp('82801')
+  min_temp = Weather.get_min_temp(config[:zip_code])
   today = Date.today()
 
   log("Weather data gathered. Minimum temperature = #{min_temp}")
@@ -35,19 +35,19 @@ while(true)
     below_freezing = false
   end
 
-  if min_temp.to_i < MIN_SAFE_TEMP && !below_freezing
+  if min_temp.to_i < config[:min_safe_temp] && !below_freezing
     log("Temperature below safe minimum. Sending alert email...")
 
     notifier = Notifier.new(:auth_file => AuthenticationFile.new('auth_file'))
-    notifier.send(TO, 'FreezeWatch: Frost Warning!',
+    notifier.send(config[:to], 'FreezeWatch: Frost Warning!',
       "The prospective minimum temperature has dropped below safe limits.\n" +
       "Prospective temperature: #{min_temp} degrees at #{Time.now}")
     below_freezing = true
-  elsif min_temp.to_i >= MIN_SAFE_TEMP && below_freezing
+  elsif min_temp.to_i >= config[:min_safe_temp] && below_freezing
     log("Temperature now above safe minimum. Sending info email...")
 
     notifier = Notifier.new({ :auth_file => AuthenticationFile.new('auth_file')})
-    notifier.send(TO, 'FreezeWatch: Temperature Raised',
+    notifier.send(config[:to], 'FreezeWatch: Temperature Raised',
       "You might be off the hook. The predicted minimum temperature has " +
       "climbed above your minimum safe temperature.\n" +
       "Prospective temperature: #{min_temp} degrees at #{Time.now}")
@@ -56,5 +56,5 @@ while(true)
 
   last_date = today
 
-  sleep(SLEEP_TIME)
+  sleep(config[:sleep_time])
 end
