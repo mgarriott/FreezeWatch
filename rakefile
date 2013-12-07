@@ -1,11 +1,12 @@
-SERVICE_DIR = File.join('/', 'usr', 'lib', 'systemd', 'system')
+SERVICE_DIR = File.join(__dir__, 'systemd')
 SERVICE_FILE = 'freezewatch.service'
 
 # Create a systemd service file in the appropriate directory
 def create_systemd_service
-  if Dir.exist?(SERVICE_DIR)
-    ruby = `which ruby`.chomp
-    service = <<-SERVICE
+  mkdir_p(SERVICE_DIR)
+
+  ruby = `which ruby`.chomp
+  service = <<-SERVICE
 [Unit]
 Description=FreezeWatch temperature monitor
 After=network.target
@@ -15,19 +16,16 @@ ExecStart=#{ruby} #{File.join(__dir__, 'src', 'watcher.rb')}
 
 [Install]
 WantedBy=multi-user.target
-    SERVICE
+  SERVICE
 
-    File.write(File.join(SERVICE_DIR, SERVICE_FILE), service)
+  File.write(File.join(SERVICE_DIR, SERVICE_FILE), service)
 
-    puts
-    puts "The service file '#{SERVICE_FILE}' was successfully installed to " +
-         "'#{SERVICE_DIR}'"
-    puts "You can run `systemctl start #{SERVICE_FILE}` to start the daemon"
-    puts "Running `systemctl enable #{SERVICE_FILE}` will ensure the " +
-         "daemon starts automatically after rebooting."
-  else
-    puts "The directory '#{SERVICE_DIR}' does not exist. Are you using systemd?"
-  end
+  puts
+  puts "The service file '#{SERVICE_FILE}' was created in '#{SERVICE_DIR}'"
+  puts "If you are running systemd, you can copy this file into your " +
+       "systemd service file directory '/usr/lib/systemd/system/'. "
+  puts "FreezeWatch can then be used like any standard systemd service " +
+       "using `systemctl`"
 end
 
 def gets_or_default(default)
@@ -44,13 +42,6 @@ task :install do
   require 'yaml'
 
   ARGV.clear # Clear the arg list so we can use gets
-
-  # We need the user to be root to install the service file and to create a
-  # root owned authentication file
-  if Process::Sys.getuid != 0
-    puts "Permissions Error! This task must be run as root."
-    exit 1
-  end
 
   config = {}
 
@@ -73,7 +64,7 @@ task :install do
   puts "FreezeWatch requires an SMTP account to send emails i.e. a Gmail " +
        "account."
   puts "Account information will be stored in a hidden file and will be " +
-       "readable only by the root user."
+       "readable only by this user."
 
   print "Enter the SMTP account username (#{config[:to].first}): "
   login = gets_or_default(config[:to].first)
@@ -110,15 +101,6 @@ task :install do
   puts "Configuration successfully saved to #{yaml_file}"
 
   create_systemd_service
-end
-
-desc "Uninstall the systemd service"
-task :uninstall do
-  file = File.join(SERVICE_DIR, SERVICE_FILE)
-  File.delete(file) if File.exist?(file)
-
-  puts "Successfully deleted '#{file}'"
-  puts "Don't forget to run `systemctl disable #{SERVICE_FILE}"
 end
 
 desc "Run the test suite"
