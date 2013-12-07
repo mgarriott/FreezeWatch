@@ -28,8 +28,8 @@ to get FreezeWatch up and running. These settings can be changed at anytime
 after the installation by editing the `freezewatch.yaml` file that will be
 created by the installer.
 
-    git clone https://github.com/mgarriott/freezewatch.git
-    cd freezewatch/
+    git clone https://github.com/mgarriott/FreezeWatch.git
+    cd FreezeWatch/
     bundle install
     bundle exec rake install
 
@@ -48,7 +48,7 @@ During the `rake install` process a systemd service file will be created. You
 can move this file into your systemd services directory and use it as you would any
 other systemd service.
 
-    sudo mv /path/to/freezewatch/systemd/freezewatch.service /usr/lib/systemd/system/
+    sudo mv /path/to/FreezeWatch/systemd/freezewatch.service /usr/lib/systemd/system/
 
     # Start the freezewatch service
     sudo systemctl start freezewatch.service
@@ -64,16 +64,16 @@ Please open an issue if you experience difficulties.
 If you are not using systemd, the daemon must be started manually. This can be
 done with the following:
 
-    bundle exec ruby /path/to/freezewatch/src/freezewatch_daemon.rb start
+    bundle exec ruby /path/to/FreezeWatch/src/freezewatch_daemon.rb start
 
 FreezeWatch can be started automatically on login by adding the following line
 to your `~/.profile` file.
 
-    bundle exec ruby /path/to/freezewatch/src/freezewatch_daemon.rb start
+    bundle exec ruby /path/to/FreezeWatch/src/freezewatch_daemon.rb start
 
 You can see examples of other daemon commands by running:
 
-    bundle exec ruby /path/to/freezewatch/src/freezewatch_daemon.rb -h
+    bundle exec ruby /path/to/FreezeWatch/src/freezewatch_daemon.rb -h
 
 ## Uninstalling ##
 
