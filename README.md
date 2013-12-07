@@ -38,7 +38,7 @@ below*
 
 ### Compatibility ###
 
-FreezeWatch was designed on arch linux and little concern was given to cross
+FreezeWatch was designed on Arch Linux and little concern was given to cross
 platform compatibility. I'm not opposed to supporting other platforms, but I
 have no intention to do so unless people express an interest.
 
@@ -96,6 +96,7 @@ directory you clone it into.
 If you are interesting in contributing to FreezeWatch please ensure your
 commits follow a few simple guidelines.
 
+- Write tests, both for new functionality and for bug fixes.
 - Avoid trailing whitespace.
 - Format commit messages in the imperative present tense.
 
