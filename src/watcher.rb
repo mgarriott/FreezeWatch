@@ -3,6 +3,7 @@ $:.unshift File.join(__dir__, ".")
 require 'date'
 require 'weather'
 require 'notifier'
+require 'authentication_file'
 require 'syslog'
 require 'yaml'
 

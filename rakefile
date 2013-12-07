@@ -40,7 +40,7 @@ task default: :test
 desc "Create the YAML file and install the systemd service file"
 task :install do
   # Create an authentication file
-  require File.join(__dir__, 'src', 'notifier')
+  require File.join(__dir__, 'src', 'authentication_file')
   require 'yaml'
 
   ARGV.clear # Clear the arg list so we can use gets

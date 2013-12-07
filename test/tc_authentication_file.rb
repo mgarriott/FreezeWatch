@@ -1,6 +1,7 @@
 $:.unshift File.join(__dir__, '..', 'src')
 
 require 'notifier'
+require 'authentication_file'
 require 'test/unit'
 
 class NotifierTest < Test::Unit::TestCase
