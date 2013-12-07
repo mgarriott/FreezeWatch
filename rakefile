@@ -18,14 +18,14 @@ ExecStart=#{ruby} #{File.join(__dir__, 'src', 'watcher.rb')}
 WantedBy=multi-user.target
   SERVICE
 
-  File.write(File.join(SERVICE_DIR, SERVICE_FILE), service)
+  full_path = File.join(SERVICE_DIR, SERVICE_FILE)
+  File.write(full_path, service)
 
   puts
   puts "The service file '#{SERVICE_FILE}' was created in '#{SERVICE_DIR}'"
-  puts "If you are running systemd, you can copy this file into your " +
-       "systemd service file directory '/usr/lib/systemd/system/'. "
-  puts "FreezeWatch can then be used like any standard systemd service " +
-       "using `systemctl`"
+  puts "If you are running systemd, copy this file into your services " +
+       "directory to use FreezeWatch with systemctl."
+  puts "    cp #{full_path} /usr/lib/systemd/system/"
 end
 
 def gets_or_default(default)
@@ -65,7 +65,7 @@ task :install do
        "account."
   puts "Account information will be stored in a hidden file and will be " +
        "readable only by this user."
-
+  puts
   print "Enter the SMTP account username (#{config[:to].first}): "
   login = gets_or_default(config[:to].first)
 
@@ -98,6 +98,7 @@ task :install do
   # Create YAML configuration file
   yaml_file = 'freezewatch.yaml'
   File.write(yaml_file, config.to_yaml)
+  puts
   puts "Configuration successfully saved to #{yaml_file}"
 
   create_systemd_service
