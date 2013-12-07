@@ -44,36 +44,41 @@ have no intention to do so unless people express an interest.
 
 ### Users With Systemd ###
 
+During the `rake install` process a systemd service file will be created. You
+can move this file into your systemd services directory and use it as you would any
+other systemd service.
+
+    sudo mv /path/to/freezewatch/systemd/freezewatch.service /usr/lib/systemd/system/
+
+    # Start the freezewatch service
+    sudo systemctl start freezewatch.service
+
+    # Enable freezewatch startup on boot
+    sudo systemctl enable freezewatch.service
+
 Barring unforeseen problems, the application should work on most platforms.
 Please open an issue if you experience difficulties.
 
 ### Users Without Systemd ###
 
-If your system isn't running systemd, expect to see an error when the
-installer attempts to create the service file. However, this shouldn't affect
-the applications configuration as a whole.
+If you are not using systemd, the daemon must be started manually. This can be
+done with the following:
 
-Because the systemd service file will not be installed, FreezeWatch must be
-manually started. This can be done with the following:
-
-    # We need to execute the program as root to read the authentication file
-    sudo bundle exec ruby /path/to/freezewatch/src/freezewatch_daemon.rb start
+    bundle exec ruby /path/to/freezewatch/src/freezewatch_daemon.rb start
 
 FreezeWatch can be started automatically on login by adding the following line
-to your `~/.profile` file. Most likely you'll need to add an entry to your
-sudoers file to allow this to run without a password, or it will fail to read
-the authentication file.
+to your `~/.profile` file.
 
-    sudo bundle exec ruby /path/to/freezewatch/src/freezewatch_daemon.rb start
+    bundle exec ruby /path/to/freezewatch/src/freezewatch_daemon.rb start
+
+You can see examples of other daemon commands by running:
+
+    bundle exec ruby /path/to/freezewatch/src/freezewatch_daemon.rb -h
 
 ## Uninstalling ##
 
-A rake task is also provided for uninstalling.
-
-    bundle exec rake uninstall
-
-This will remove the systemd service file created during installation (if one
-was created).
+If you copied the systemd service file into your systemd service directory you
+can delete it.
 
 If you previously enabled the service with:
 
@@ -82,6 +87,9 @@ If you previously enabled the service with:
 Then you need to disable the service with:
 
     systemctl disable freezewatch.service
+
+That's it, other than the systemd file, the application runs entirely from the
+directory you clone it into.
 
 ## Contributing ##
 
