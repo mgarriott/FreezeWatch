@@ -18,7 +18,7 @@ Pretty handy!
 ## Pre Requisites ##
 
 - Ruby 2.0 or greater
-- Bundler ruby gem
+- Bundler Ruby gem
 
 ## Installation ##
 
@@ -33,8 +33,8 @@ created by the installer.
     bundle install
     bundle exec rake install
 
-*If you experience any issues with installation please read the sections
-below*
+*If you experience any issues with installation, please read the sections
+below.*
 
 ### Compatibility ###
 
@@ -77,8 +77,8 @@ You can see examples of other daemon commands by running:
 
 ## Uninstalling ##
 
-If you copied the systemd service file into your systemd service directory you
-can delete it.
+If you copied the systemd service file into your systemd service directory, it
+can simply be deleted.
 
 If you previously enabled the service with:
 
@@ -93,7 +93,7 @@ directory you clone it into.
 
 ## Contributing ##
 
-If you are interesting in contributing to FreezeWatch please ensure your
+If you are interested in contributing to FreezeWatch, please ensure your
 commits follow a few simple guidelines.
 
 - Write tests, both for new functionality and for bug fixes.
