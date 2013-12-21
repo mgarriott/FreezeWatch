@@ -22,6 +22,13 @@ Pretty handy!
 
 ## Installation ##
 
+### Arch Linux Users ###
+
+A package for FreezeWatch is available in the AUR. You can get it here:
+[https://aur.archlinux.org/packages/freeze-watch/](https://aur.archlinux.org/packages/freeze-watch/)
+
+### Everyone Else ###
+
 A task is provided in the rakefile to make installation quick and easy. When
 you run the rake task, you'll be prompted for the necessary information needed
 to get FreezeWatch up and running. These settings can be changed at anytime
