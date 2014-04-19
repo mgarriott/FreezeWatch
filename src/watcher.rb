@@ -1,9 +1,9 @@
 $:.unshift File.join(__dir__, ".")
+$:.unshift File.join(__dir__, "..", 'vendor', 'notifier', 'lib')
 
 require 'date'
 require 'weather'
 require 'notifier'
-require 'authentication_file'
 require 'syslog'
 require 'yaml'
 
@@ -37,7 +37,7 @@ while(true)
   end
 
   notifier = Notifier.new(
-    auth_file: AuthenticationFile.new('.auth_file'),
+    auth_file: AuthenticationFile.new(File.join(__dir__, '..', '.auth_file')),
     server_address: config[:server_address],
     port: config[:port]
   )

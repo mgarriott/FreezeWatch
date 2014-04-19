@@ -1,0 +1,3 @@
+[submodule "vendor/notifier"]
+	path = vendor/notifier
+	url = /home/matt/programming/ruby/notifier
