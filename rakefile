@@ -12,7 +12,7 @@ Description=FreezeWatch temperature monitor
 After=network.target
 
 [Service]
-ExecStart=#{ruby} #{File.join(__dir__, 'src', 'watcher.rb')}
+ExecStart=#{ruby} #{File.join(__dir__, 'bin', 'watcher.rb')}
 
 [Install]
 WantedBy=multi-user.target
@@ -33,12 +33,10 @@ def gets_or_default(default)
   input.empty? ? default : input
 end
 
-task default: :test
-
 desc "Create the YAML file and install the systemd service file"
 task :install do
   # Create an authentication file
-  require File.join(__dir__, 'src', 'authentication_file')
+  require File.join(__dir__, 'vendor', 'notifier', 'lib', 'notifier')
   require 'yaml'
 
   ARGV.clear # Clear the arg list so we can use gets
@@ -102,9 +100,4 @@ task :install do
   puts "Configuration successfully saved to #{yaml_file}"
 
   create_systemd_service
-end
-
-desc "Run the test suite"
-task :test do
-  require File.join(__dir__, 'test', 'ts_all')
 end
