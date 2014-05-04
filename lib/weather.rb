@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-
 require 'net/http'
 require 'cgi'
 require 'rexml/document'
@@ -15,6 +13,9 @@ class Weather
   def Weather.get_response(params)
     full_url = "#@@url?#{Weather.get_query_string(params)}"
     Net::HTTP.get_response(URI.parse(full_url))
+  rescue SocketError
+    sleep 5
+    get_response(params)
   end
 
   def Weather.get_latlons(zipcodes)

@@ -1,4 +1,4 @@
-$:.unshift File.join(__dir__, ".")
+$:.unshift File.join(__dir__, "..", 'lib')
 $:.unshift File.join(__dir__, "..", 'vendor', 'notifier', 'lib')
 
 require 'date'
