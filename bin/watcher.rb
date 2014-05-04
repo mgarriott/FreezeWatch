@@ -1,9 +1,9 @@
 $:.unshift File.join(__dir__, "..", 'lib')
-$:.unshift File.join(__dir__, "..", 'vendor', 'notifier', 'lib')
 
+require 'bundler/setup'
+require 'notifier'
 require 'date'
 require 'weather'
-require 'notifier'
 require 'syslog'
 require 'yaml'
 
@@ -42,14 +42,14 @@ while(true)
     port: config[:port]
   )
 
-  if min_temp.to_i < config[:min_safe_temp] && !below_freezing
+  if min_temp.to_i < config[:min_safe_temp].to_i && !below_freezing
     log("Temperature below safe minimum. Sending alert email...")
 
     notifier.send(config[:to], 'FreezeWatch: Frost Warning!',
       "The prospective minimum temperature has dropped below safe limits.\n" +
       "Prospective temperature: #{min_temp} degrees at #{Time.now}")
     below_freezing = true
-  elsif min_temp.to_i >= config[:min_safe_temp] && below_freezing
+  elsif min_temp.to_i >= config[:min_safe_temp].to_i && below_freezing
     log("Temperature now above safe minimum. Sending info email...")
 
     notifier.send(config[:to], 'FreezeWatch: Temperature Raised',

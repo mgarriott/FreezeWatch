@@ -71,16 +71,16 @@ Please open an issue if you experience difficulties.
 If you are not using systemd, the daemon must be started manually. This can be
 done with the following:
 
-    bundle exec ruby /path/to/FreezeWatch/src/freezewatch_daemon.rb start
+    bundle exec ruby /path/to/FreezeWatch/bin/freezewatch_daemon.rb start
 
 FreezeWatch can be started automatically on login by adding the following line
 to your `~/.profile` file.
 
-    bundle exec ruby /path/to/FreezeWatch/src/freezewatch_daemon.rb start
+    bundle exec ruby /path/to/FreezeWatch/bin/freezewatch_daemon.rb start
 
 You can see examples of other daemon commands by running:
 
-    bundle exec ruby /path/to/FreezeWatch/src/freezewatch_daemon.rb -h
+    bundle exec ruby /path/to/FreezeWatch/bin/freezewatch_daemon.rb -h
 
 ## Uninstalling ##
 

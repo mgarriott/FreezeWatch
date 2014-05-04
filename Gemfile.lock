@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/mgarriott/notifier.git
+  revision: 847568b469a781b32fb0184076a2f1e0eeb4634a
+  specs:
+    notifier (0.0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -18,5 +24,6 @@ PLATFORMS
 
 DEPENDENCIES
   daemons
+  notifier!
   rake (~> 10.1.0)
   rspec

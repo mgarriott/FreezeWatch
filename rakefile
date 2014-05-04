@@ -12,6 +12,7 @@ Description=FreezeWatch temperature monitor
 After=network.target
 
 [Service]
+WorkingDirectory=#{__dir__}
 ExecStart=#{ruby} #{File.join(__dir__, 'bin', 'watcher.rb')}
 
 [Install]
@@ -36,7 +37,7 @@ end
 desc "Create the YAML file and install the systemd service file"
 task :install do
   # Create an authentication file
-  require File.join(__dir__, 'vendor', 'notifier', 'lib', 'notifier')
+  require 'notifier'
   require 'yaml'
 
   ARGV.clear # Clear the arg list so we can use gets
